@@ -1,0 +1,35 @@
+services:
+
+  event-service:
+    build: ./event-service
+    container_name: event-service
+    ports:
+      - "6001:6001"
+    networks:
+      - booking-net
+
+  customer-service:
+    build: ./customer-service
+    container_name: customer-service
+    ports:
+      - "6002:6002"
+    networks:
+      - booking-net
+
+  booking-service:
+    build: ./booking-service
+    container_name: booking-service
+    ports:
+      - "6003:6003"
+    environment:
+      - CUSTOMER_SERVICE_URL=http://customer-service:6002
+      - EVENT_SERVICE_URL=http://event-service:6001
+    depends_on:
+      - customer-service
+      - event-service
+    networks:
+      - booking-net
+
+networks:
+  booking-net:
+    driver: bridge
